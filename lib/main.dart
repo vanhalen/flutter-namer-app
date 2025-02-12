@@ -56,6 +56,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   Widget build(BuildContext context) {
+    // Funcionalidade do menu
     Widget page;
     if (selectedIndex == 0) {
       page = GeneratorPage();
@@ -72,7 +73,7 @@ class _MyHomePageState extends State<MyHomePage> {
           // Add menu lateral
           SafeArea(
             child: NavigationRail(
-                extended: true,
+                extended: false,
                 destinations: [
                   NavigationRailDestination(
                     icon: Icon(Icons.home),
