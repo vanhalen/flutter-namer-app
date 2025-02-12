@@ -67,43 +67,47 @@ class _MyHomePageState extends State<MyHomePage> {
       throw UnimplementedError(' Nenhuma tela para o menu $selectedIndex');
     }
 
-    return Scaffold(
-      body: Row(
-        children: [
-          // Add menu lateral
-          SafeArea(
-            child: NavigationRail(
-                extended: false,
-                destinations: [
-                  NavigationRailDestination(
-                    icon: Icon(Icons.home),
-                    label: Text('Início'),
-                  ),
-                  NavigationRailDestination(
-                    icon: Icon(Icons.favorite),
-                    label: Text('Favoritos'),
-                  ),
-                ],
-                selectedIndex: selectedIndex,
-                onDestinationSelected: (value) {
-                  print('Selecionado: $value');
-                  setState(() {
-                    // Mudando de página
-                    selectedIndex = value;
-                  });
-                }),
-          ),
-          // Chama a pagina
-          Expanded(
-            child: Container(
-              color: Theme.of(context).colorScheme.primaryContainer,
-              // child: GeneratorPage(),
-              child: page,
+    // Utilizando o LayoutBuilder, com o constraints, é possivel fazer a condição
+    // do maxWidth na tela, se form maior ou igual a 600px ele abre o menu completo
+    return LayoutBuilder(builder: (context, constraints) {
+      return Scaffold(
+        body: Row(
+          children: [
+            // Add menu lateral
+            SafeArea(
+              child: NavigationRail(
+                  extended: constraints.maxWidth >= 600,
+                  destinations: [
+                    NavigationRailDestination(
+                      icon: Icon(Icons.home),
+                      label: Text('Início'),
+                    ),
+                    NavigationRailDestination(
+                      icon: Icon(Icons.favorite),
+                      label: Text('Favoritos'),
+                    ),
+                  ],
+                  selectedIndex: selectedIndex,
+                  onDestinationSelected: (value) {
+                    print('Selecionado: $value');
+                    setState(() {
+                      // Mudando de página
+                      selectedIndex = value;
+                    });
+                  }),
             ),
-          ),
-        ],
-      ),
-    );
+            // Chama a pagina
+            Expanded(
+              child: Container(
+                color: Theme.of(context).colorScheme.primaryContainer,
+                // child: GeneratorPage(),
+                child: page,
+              ),
+            ),
+          ],
+        ),
+      );
+    });
   }
 }
 
