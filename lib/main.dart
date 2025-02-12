@@ -208,7 +208,10 @@ class FavoritePage extends StatelessWidget {
         ),
         for (WordPair favorite in appState.favorites)
           ListTile(
-            leading: Icon(Icons.favorite),
+            leading: Icon(
+              Icons.favorite,
+              color: Colors.red,
+            ),
             title: Text(favorite.asCamelCase),
           )
       ],
