@@ -45,6 +45,13 @@ class MyAppState extends ChangeNotifier {
     }
     notifyListeners();
   }
+
+  void deleteFavorite(itemDel) {
+    if (favorites.contains(itemDel)) {
+      favorites.remove(itemDel);
+    }
+    notifyListeners();
+  }
 }
 
 // Aqui cria um controlador para a primeira página
@@ -200,20 +207,37 @@ class FavoritePage extends StatelessWidget {
       );
     }
 
-    return ListView(
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Padding(
           padding: const EdgeInsets.all(20),
           child: Text('Meus Favoritos ( Total: ${appState.favorites.length} )'),
         ),
-        for (WordPair favorite in appState.favorites)
-          ListTile(
-            leading: Icon(
-              Icons.favorite,
-              color: Colors.red,
+        Expanded(
+          // GridView fica com uma responsabilidade melhor, lado a lado
+          child: GridView(
+            gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
+              maxCrossAxisExtent: 400,
+              childAspectRatio: 400 / 80,
             ),
-            title: Text(favorite.asCamelCase),
-          )
+            children: [
+              for (WordPair favorite in appState.favorites)
+                ListTile(
+                  leading: IconButton(
+                    onPressed: () {
+                      appState.deleteFavorite(favorite);
+                    },
+                    icon: Icon(
+                      Icons.delete_outline,
+                      color: const Color.fromARGB(255, 136, 25, 25),
+                    ),
+                  ),
+                  title: Text(favorite.asCamelCase),
+                ),
+            ],
+          ),
+        )
       ],
     );
   }
