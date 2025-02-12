@@ -25,6 +25,7 @@ class MyApp extends StatelessWidget {
   }
 }
 
+// Aqui pe onde fica a lógica (regra de negócio)
 class MyAppState extends ChangeNotifier {
   var current = WordPair.random();
 
@@ -46,6 +47,8 @@ class MyAppState extends ChangeNotifier {
   }
 }
 
+// Aqui cria um controlador para a primeira página
+// Isso inclui menus e paginas que vão ser puxadas
 class MyHomePage extends StatefulWidget {
   @override
   State<MyHomePage> createState() => _MyHomePageState();
@@ -61,8 +64,9 @@ class _MyHomePageState extends State<MyHomePage> {
     if (selectedIndex == 0) {
       page = GeneratorPage();
     } else if (selectedIndex == 1) {
-      // Cria um conteudo teste fictício (retangulo com x no meio)
-      page = Placeholder();
+      page = FavoritePage();
+      // // Cria um conteudo teste fictício (retangulo com x no meio)
+      // page = Placeholder();
     } else {
       throw UnimplementedError(' Nenhuma tela para o menu $selectedIndex');
     }
@@ -111,6 +115,7 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 }
 
+// Pagina Início
 class GeneratorPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
@@ -176,9 +181,37 @@ class GeneratorPage extends StatelessWidget {
               },
               child: Text('Próximo'),
             ),
-          ])
+          ]),
         ],
       ),
+    );
+  }
+}
+
+// Pagina Favoritos
+class FavoritePage extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    MyAppState appState = context.watch<MyAppState>();
+
+    if (appState.favorites.isEmpty) {
+      return Center(
+        child: Text('Você ainda não possui favoritos!'),
+      );
+    }
+
+    return ListView(
+      children: [
+        Padding(
+          padding: const EdgeInsets.all(20),
+          child: Text('Meus Favoritos ( Total: ${appState.favorites.length} )'),
+        ),
+        for (WordPair favorite in appState.favorites)
+          ListTile(
+            leading: Icon(Icons.favorite),
+            title: Text(favorite.asCamelCase),
+          )
+      ],
     );
   }
 }
