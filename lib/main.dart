@@ -49,6 +49,40 @@ class MyAppState extends ChangeNotifier {
 class MyHomePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
+    return Scaffold(
+      body: Row(
+        children: [
+          // Add menu lateral
+          SafeArea(
+            child: NavigationRail(
+                extended: false,
+                destinations: [
+                  NavigationRailDestination(
+                      icon: Icon(Icons.home), label: Text('Início')),
+                  NavigationRailDestination(
+                      icon: Icon(Icons.favorite), label: Text('Favoritos')),
+                ],
+                selectedIndex: 0,
+                onDestinationSelected: (value) {
+                  print('Selecionado: $value');
+                }),
+          ),
+          // Chama a pagina
+          Expanded(
+            child: Container(
+              color: Theme.of(context).colorScheme.primaryContainer,
+              child: GeneratorPage(),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class GeneratorPage extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
     var appState = context.watch<MyAppState>();
     var pair = appState.current;
 
@@ -59,62 +93,60 @@ class MyHomePage extends StatelessWidget {
       icon = Icons.favorite_border;
     }
 
-    return Scaffold(
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            // Text('Uma ideia de nome:'),
-            BigCard(pair: pair),
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          // Text('Uma ideia de nome:'),
+          BigCard(pair: pair),
 
-            SizedBox(
-              height: 15,
+          SizedBox(
+            height: 15,
+          ),
+          // Criar um Botão
+          Row(mainAxisAlignment: MainAxisAlignment.center, children: [
+            // Primeiro teste
+            // ElevatedButton(
+            //   onPressed: () {
+            //     appState.toggleFavorite();
+            //   },
+            //   child: Row(
+            //     children: [
+            //       Icon(
+            //         // Icons.favorite_border_outlined,
+            //         icon,
+            //         color: Colors.red,
+            //         size: 24.4,
+            //         semanticLabel: 'Favoritar',
+            //       ),
+            //       SizedBox(width: 5),
+            //       Text('Favoritar')
+            //     ],
+            //   ),
+            // ),
+
+            ElevatedButton.icon(
+              onPressed: () {
+                appState.toggleFavorite();
+              },
+              label: Text('Favoritar'),
+              icon: Icon(
+                icon,
+                color: Colors.red,
+                size: 20,
+              ),
             ),
-            // Criar um Botão
-            Row(mainAxisAlignment: MainAxisAlignment.center, children: [
-              // Primeiro teste
-              // ElevatedButton(
-              //   onPressed: () {
-              //     appState.toggleFavorite();
-              //   },
-              //   child: Row(
-              //     children: [
-              //       Icon(
-              //         // Icons.favorite_border_outlined,
-              //         icon,
-              //         color: Colors.red,
-              //         size: 24.4,
-              //         semanticLabel: 'Favoritar',
-              //       ),
-              //       SizedBox(width: 5),
-              //       Text('Favoritar')
-              //     ],
-              //   ),
-              // ),
+            SizedBox(width: 10),
 
-              ElevatedButton.icon(
-                onPressed: () {
-                  appState.toggleFavorite();
-                },
-                label: Text('Favoritar'),
-                icon: Icon(
-                  icon,
-                  color: Colors.red,
-                  size: 20,
-                ),
-              ),
-              SizedBox(width: 10),
-
-              ElevatedButton(
-                onPressed: () {
-                  print('Botão Maldito!');
-                  appState.getNext();
-                },
-                child: Text('Próximo'),
-              ),
-            ])
-          ],
-        ),
+            ElevatedButton(
+              onPressed: () {
+                print('Botão Maldito!');
+                appState.getNext();
+              },
+              child: Text('Próximo'),
+            ),
+          ])
+        ],
       ),
     );
   }
