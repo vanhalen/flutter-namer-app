@@ -46,32 +46,58 @@ class MyAppState extends ChangeNotifier {
   }
 }
 
-class MyHomePage extends StatelessWidget {
+class MyHomePage extends StatefulWidget {
+  @override
+  State<MyHomePage> createState() => _MyHomePageState();
+}
+
+class _MyHomePageState extends State<MyHomePage> {
+  int selectedIndex = 0; // Padrão home page
+
   @override
   Widget build(BuildContext context) {
+    Widget page;
+    if (selectedIndex == 0) {
+      page = GeneratorPage();
+    } else if (selectedIndex == 1) {
+      // Cria um conteudo teste fictício (retangulo com x no meio)
+      page = Placeholder();
+    } else {
+      throw UnimplementedError(' Nenhuma tela para o menu $selectedIndex');
+    }
+
     return Scaffold(
       body: Row(
         children: [
           // Add menu lateral
           SafeArea(
             child: NavigationRail(
-                extended: false,
+                extended: true,
                 destinations: [
                   NavigationRailDestination(
-                      icon: Icon(Icons.home), label: Text('Início')),
+                    icon: Icon(Icons.home),
+                    label: Text('Início'),
+                  ),
                   NavigationRailDestination(
-                      icon: Icon(Icons.favorite), label: Text('Favoritos')),
+                    icon: Icon(Icons.favorite),
+                    label: Text('Favoritos'),
+                  ),
                 ],
-                selectedIndex: 0,
+                selectedIndex: selectedIndex,
                 onDestinationSelected: (value) {
                   print('Selecionado: $value');
+                  setState(() {
+                    // Mudando de página
+                    selectedIndex = value;
+                  });
                 }),
           ),
           // Chama a pagina
           Expanded(
             child: Container(
               color: Theme.of(context).colorScheme.primaryContainer,
-              child: GeneratorPage(),
+              // child: GeneratorPage(),
+              child: page,
             ),
           ),
         ],
