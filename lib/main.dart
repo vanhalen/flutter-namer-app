@@ -339,8 +339,7 @@ class FavoritePage extends StatelessWidget {
       children: [
         Padding(
           padding: const EdgeInsets.all(30),
-          child: Text('You have '
-              '${appState.favorites.length} favorites:'),
+          child: Text('Meus Favoritos ( Total: ${appState.favorites.length} )'),
         ),
         Expanded(
           // Make better use of wide windows with a grid.
