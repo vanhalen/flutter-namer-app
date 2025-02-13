@@ -61,6 +61,13 @@ class MyAppState extends ChangeNotifier {
     }
     notifyListeners();
   }
+
+  void cleaningHistory() {
+    if (history.isNotEmpty) {
+      history = <WordPair>[];
+    }
+    notifyListeners();
+  }
 }
 
 // Aqui cria um controlador para a primeira página
@@ -171,6 +178,7 @@ class GeneratorPage extends StatelessWidget {
   Widget build(BuildContext context) {
     MyAppState appState = context.watch<MyAppState>();
     WordPair pair = appState.current;
+    final theme = Theme.of(context);
 
     IconData icon;
     if (appState.favorites.contains(pair)) {
@@ -231,13 +239,32 @@ class GeneratorPage extends StatelessWidget {
               ),
               SizedBox(width: 10),
 
-              ElevatedButton(
+              ElevatedButton.icon(
                 onPressed: () {
                   print('Botão Maldito!');
                   appState.getNext();
                 },
-                child: Text('Próximo'),
+                label: Text('Próximo'),
+                icon: Icon(
+                  Icons.skip_next,
+                  color: theme.primaryColor,
+                  size: 20,
+                ),
               ),
+              SizedBox(width: 10),
+
+              ElevatedButton.icon(
+                onPressed: () {
+                  appState.cleaningHistory();
+                },
+                label: Text('Limpar'),
+                icon: Icon(
+                  Icons.cleaning_services,
+                  color: const Color.fromARGB(255, 181, 182, 101),
+                  size: 20,
+                ),
+              ),
+              SizedBox(width: 10),
             ],
           ),
           // Coloca um espaço abaixo para conteúdo não ir para o rodapé
@@ -367,6 +394,10 @@ class _HistoryListViewState extends State<HistoryListView> {
   Widget build(BuildContext context) {
     final appState = context.watch<MyAppState>();
     appState.historyListKey = _key;
+
+    if (appState.history.isEmpty) {
+      return SizedBox(); // Retorna vazio caso a lista esteja vazia
+    }
 
     return ShaderMask(
       shaderCallback: (bounds) => _maskingGradient.createShader(bounds),
