@@ -1,16 +1,16 @@
 # namer_app
 
-A new Flutter project.
+Projeto de exemplo baseado na documentação oficial do Flutter.
 
-## Getting Started
+## Como começar
 
-This project is a starting point for a Flutter application.
+Este é um projeto básico ensinado na documentação do Flutter.
 
-A few resources to get you started if this is your first Flutter project:
+- [Aprenda a desenvolver este app](https://docs.flutter.dev/get-started/codelab)
+- [Documentação](https://docs.flutter.dev/)
+- [Tutoriais](https://docs.flutter.dev/cookbook)
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+  <img src="https://images.rodrigorchagas.com.br/namer_app/1.png" alt="Rodrigo Chagas - Namer App 1">
+  <img src="https://images.rodrigorchagas.com.br/namer_app/2.png" alt="Rodrigo Chagas - Namer App 2">
+  <img src="https://images.rodrigorchagas.com.br/namer_app/3.png" alt="Rodrigo Chagas - Namer App 3">
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.

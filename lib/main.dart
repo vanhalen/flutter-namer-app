@@ -354,7 +354,7 @@ class FavoritePage extends StatelessWidget {
                   leading: IconButton(
                     icon: Icon(Icons.delete_outline,
                         semanticLabel: 'Deletar',
-                        color: const Color.fromARGB(255, 137, 18, 9)),
+                        color: const Color.fromARGB(255, 164, 20, 10)),
                     color: theme.colorScheme.primary,
                     onPressed: () {
                       appState.deleteFavorite(pair);
