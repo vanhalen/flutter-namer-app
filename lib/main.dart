@@ -1,5 +1,3 @@
-import 'dart:ffi';
-
 import 'package:english_words/english_words.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -30,8 +28,15 @@ class MyApp extends StatelessWidget {
 // Aqui pe onde fica a lógica (regra de negócio)
 class MyAppState extends ChangeNotifier {
   WordPair current = WordPair.random();
+  List<WordPair> history = <WordPair>[];
+
+  GlobalKey? historyListKey;
 
   void getNext() {
+    // Insere corretamente no histórico permanecendo a escolha do favorito
+    history.insert(0, current);
+    var animatedList = historyListKey?.currentState as AnimatedListState?;
+    animatedList?.insertItem(0);
     current = WordPair.random();
     notifyListeners();
   }
@@ -39,16 +44,18 @@ class MyAppState extends ChangeNotifier {
   // Lógica de favoritos
   List<WordPair> favorites = <WordPair>[];
 
-  void toggleFavorite() {
-    if (favorites.contains(current)) {
-      favorites.remove(current);
+  void toggleFavorite([WordPair? pair]) {
+    pair = pair ?? current;
+
+    if (favorites.contains(pair)) {
+      favorites.remove(pair);
     } else {
-      favorites.add(current);
+      favorites.add(pair);
     }
     notifyListeners();
   }
 
-  void deleteFavorite(itemDel) {
+  void deleteFavorite(WordPair itemDel) {
     if (favorites.contains(itemDel)) {
       favorites.remove(itemDel);
     }
@@ -142,6 +149,11 @@ class GeneratorPage extends StatelessWidget {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
+          Expanded(
+            flex: 3,
+            child: HistoryListView(),
+          ),
+          SizedBox(height: 10),
           // Text('Uma ideia de nome:'),
           BigCard(pair: pair),
 
@@ -149,102 +161,60 @@ class GeneratorPage extends StatelessWidget {
             height: 15,
           ),
           // Criar um Botão
-          Row(mainAxisAlignment: MainAxisAlignment.center, children: [
-            // Primeiro teste
-            // ElevatedButton(
-            //   onPressed: () {
-            //     appState.toggleFavorite();
-            //   },
-            //   child: Row(
-            //     children: [
-            //       Icon(
-            //         // Icons.favorite_border_outlined,
-            //         icon,
-            //         color: Colors.red,
-            //         size: 24.4,
-            //         semanticLabel: 'Favoritar',
-            //       ),
-            //       SizedBox(width: 5),
-            //       Text('Favoritar')
-            //     ],
-            //   ),
-            // ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              // Primeiro teste
+              // ElevatedButton(
+              //   onPressed: () {
+              //     appState.toggleFavorite();
+              //   },
+              //   child: Row(
+              //     children: [
+              //       Icon(
+              //         // Icons.favorite_border_outlined,
+              //         icon,
+              //         color: Colors.red,
+              //         size: 24.4,
+              //         semanticLabel: 'Favoritar',
+              //       ),
+              //       SizedBox(width: 5),
+              //       Text('Favoritar')
+              //     ],
+              //   ),
+              // ),
 
-            ElevatedButton.icon(
-              onPressed: () {
-                appState.toggleFavorite();
-              },
-              label: Text('Favoritar'),
-              icon: Icon(
-                icon,
-                color: Colors.red,
-                size: 20,
+              ElevatedButton.icon(
+                onPressed: () {
+                  appState.toggleFavorite();
+                },
+                label: Text('Favoritar'),
+                icon: Icon(
+                  icon,
+                  color: Colors.red,
+                  size: 20,
+                ),
               ),
-            ),
-            SizedBox(width: 10),
+              SizedBox(width: 10),
 
-            ElevatedButton(
-              onPressed: () {
-                print('Botão Maldito!');
-                appState.getNext();
-              },
-              child: Text('Próximo'),
-            ),
-          ]),
+              ElevatedButton(
+                onPressed: () {
+                  print('Botão Maldito!');
+                  appState.getNext();
+                },
+                child: Text('Próximo'),
+              ),
+            ],
+          ),
+          // Coloca um espaço abaixo para conteúdo não ir para o rodapé
+          Spacer(flex: 2),
         ],
       ),
     );
   }
 }
 
-// Pagina Favoritos
-class FavoritePage extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    MyAppState appState = context.watch<MyAppState>();
-
-    if (appState.favorites.isEmpty) {
-      return Center(
-        child: Text('Você ainda não possui favoritos!'),
-      );
-    }
-
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Padding(
-          padding: const EdgeInsets.all(20),
-          child: Text('Meus Favoritos ( Total: ${appState.favorites.length} )'),
-        ),
-        Expanded(
-          // GridView fica com uma responsabilidade melhor, lado a lado
-          child: GridView(
-            gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
-              maxCrossAxisExtent: 400,
-              childAspectRatio: 400 / 80,
-            ),
-            children: [
-              for (WordPair favorite in appState.favorites)
-                ListTile(
-                  leading: IconButton(
-                    onPressed: () {
-                      appState.deleteFavorite(favorite);
-                    },
-                    icon: Icon(
-                      Icons.delete_outline,
-                      color: const Color.fromARGB(255, 136, 25, 25),
-                    ),
-                  ),
-                  title: Text(favorite.asCamelCase),
-                ),
-            ],
-          ),
-        )
-      ],
-    );
-  }
-}
-
+// Monta o card principal com o NOME
 class BigCard extends StatelessWidget {
   const BigCard({
     super.key,
@@ -271,6 +241,114 @@ class BigCard extends StatelessWidget {
             pair.asCamelCase,
             style: meuEstilo,
             semanticsLabel: "${pair.first} ${pair.second}"),
+      ),
+    );
+  }
+}
+
+// Pagina Favoritos
+class FavoritePage extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    var theme = Theme.of(context);
+    var appState = context.watch<MyAppState>();
+
+    if (appState.favorites.isEmpty) {
+      return Center(
+        child: Text('No favorites yet.'),
+      );
+    }
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Padding(
+          padding: const EdgeInsets.all(30),
+          child: Text('You have '
+              '${appState.favorites.length} favorites:'),
+        ),
+        Expanded(
+          // Make better use of wide windows with a grid.
+          child: GridView(
+            gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
+              maxCrossAxisExtent: 400,
+              childAspectRatio: 400 / 80,
+            ),
+            children: [
+              for (var pair in appState.favorites)
+                ListTile(
+                  leading: IconButton(
+                    icon: Icon(Icons.delete_outline, semanticLabel: 'Delete'),
+                    color: theme.colorScheme.primary,
+                    onPressed: () {
+                      appState.deleteFavorite(pair);
+                    },
+                  ),
+                  title: Text(
+                    pair.asLowerCase,
+                    semanticsLabel: pair.asPascalCase,
+                  ),
+                ),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class HistoryListView extends StatefulWidget {
+  const HistoryListView({Key? key}) : super(key: key);
+
+  @override
+  State<HistoryListView> createState() => _HistoryListViewState();
+}
+
+class _HistoryListViewState extends State<HistoryListView> {
+  final _key = GlobalKey();
+
+  /// Monta o gradient no topo da lista de histórico
+  static const Gradient _maskingGradient = LinearGradient(
+    colors: [Colors.transparent, Colors.black],
+    stops: [0.0, 0.5],
+    begin: Alignment.topCenter,
+    end: Alignment.bottomCenter,
+  );
+
+  @override
+  Widget build(BuildContext context) {
+    final appState = context.watch<MyAppState>();
+    appState.historyListKey = _key;
+
+    return ShaderMask(
+      shaderCallback: (bounds) => _maskingGradient.createShader(bounds),
+      // blendMode mescla o shader com o gradiente criado
+      blendMode: BlendMode.dstIn,
+      child: AnimatedList(
+        key: _key,
+        reverse: true,
+        padding: EdgeInsets.only(top: 50),
+        initialItemCount: appState.history.length,
+        itemBuilder: (context, index, animation) {
+          final pair = appState.history[index];
+          return SizeTransition(
+            sizeFactor: animation,
+            child: Center(
+              child: TextButton.icon(
+                onPressed: () {
+                  appState.toggleFavorite(pair);
+                },
+                icon: appState.favorites.contains(pair)
+                    ? Icon(Icons.favorite, size: 12)
+                    : SizedBox(),
+                label: Text(
+                  pair.asLowerCase,
+                  semanticsLabel: pair.asPascalCase,
+                ),
+              ),
+            ),
+          );
+        },
       ),
     );
   }
