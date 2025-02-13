@@ -352,14 +352,16 @@ class FavoritePage extends StatelessWidget {
               for (var pair in appState.favorites)
                 ListTile(
                   leading: IconButton(
-                    icon: Icon(Icons.delete_outline, semanticLabel: 'Delete'),
+                    icon: Icon(Icons.delete_outline,
+                        semanticLabel: 'Deletar',
+                        color: const Color.fromARGB(255, 137, 18, 9)),
                     color: theme.colorScheme.primary,
                     onPressed: () {
                       appState.deleteFavorite(pair);
                     },
                   ),
                   title: Text(
-                    pair.asLowerCase,
+                    pair.asPascalCase,
                     semanticsLabel: pair.asPascalCase,
                   ),
                 ),
