@@ -1,3 +1,5 @@
+import 'dart:ffi';
+
 import 'package:english_words/english_words.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -27,7 +29,7 @@ class MyApp extends StatelessWidget {
 
 // Aqui pe onde fica a lógica (regra de negócio)
 class MyAppState extends ChangeNotifier {
-  var current = WordPair.random();
+  WordPair current = WordPair.random();
 
   void getNext() {
     current = WordPair.random();
@@ -35,7 +37,7 @@ class MyAppState extends ChangeNotifier {
   }
 
   // Lógica de favoritos
-  var favorites = <WordPair>[];
+  List<WordPair> favorites = <WordPair>[];
 
   void toggleFavorite() {
     if (favorites.contains(current)) {
@@ -126,8 +128,8 @@ class _MyHomePageState extends State<MyHomePage> {
 class GeneratorPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    var appState = context.watch<MyAppState>();
-    var pair = appState.current;
+    MyAppState appState = context.watch<MyAppState>();
+    WordPair pair = appState.current;
 
     IconData icon;
     if (appState.favorites.contains(pair)) {
