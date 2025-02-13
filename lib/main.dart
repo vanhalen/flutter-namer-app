@@ -75,6 +75,8 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   Widget build(BuildContext context) {
+    var colorScheme = Theme.of(context).colorScheme;
+
     // Funcionalidade do menu
     Widget page;
     if (selectedIndex == 0) {
@@ -87,47 +89,79 @@ class _MyHomePageState extends State<MyHomePage> {
       throw UnimplementedError(' Nenhuma tela para o menu $selectedIndex');
     }
 
+    // Faz uma animação de cor
+    var mainArea = ColoredBox(
+      color: colorScheme
+          .primaryContainer, // Altere para surface ou outra cor desejada
+      child: AnimatedSwitcher(
+        duration: Duration(milliseconds: 200),
+        child: page,
+      ),
+    );
+
     // Utilizando o LayoutBuilder, com o constraints, é possivel fazer a condição
     // do maxWidth na tela, se form maior ou igual a 600px ele abre o menu completo
-    return LayoutBuilder(builder: (context, constraints) {
-      return Scaffold(
-        body: Row(
-          children: [
-            // Add menu lateral
-            SafeArea(
-              child: NavigationRail(
-                  extended: constraints.maxWidth >= 600,
-                  destinations: [
-                    NavigationRailDestination(
-                      icon: Icon(Icons.home),
-                      label: Text('Início'),
-                    ),
-                    NavigationRailDestination(
-                      icon: Icon(Icons.favorite),
-                      label: Text('Favoritos'),
-                    ),
-                  ],
-                  selectedIndex: selectedIndex,
-                  onDestinationSelected: (value) {
-                    print('Selecionado: $value');
-                    setState(() {
-                      // Mudando de página
-                      selectedIndex = value;
-                    });
-                  }),
-            ),
-            // Chama a pagina
-            Expanded(
-              child: Container(
-                color: Theme.of(context).colorScheme.primaryContainer,
-                // child: GeneratorPage(),
-                child: page,
-              ),
-            ),
-          ],
-        ),
-      );
-    });
+    return Scaffold(
+      body: LayoutBuilder(
+        builder: (context, constraints) {
+          if (constraints.maxWidth < 450) {
+            // Usando padrão de menu mobile para telas pequenas
+            return Column(
+              children: [
+                Expanded(child: mainArea),
+                SafeArea(
+                  child: BottomNavigationBar(
+                    items: [
+                      BottomNavigationBarItem(
+                        icon: Icon(Icons.home),
+                        label: 'Início',
+                      ),
+                      BottomNavigationBarItem(
+                        icon: Icon(Icons.favorite),
+                        label: 'Favoritos',
+                      ),
+                    ],
+                    currentIndex: selectedIndex,
+                    onTap: (value) {
+                      setState(() {
+                        selectedIndex = value;
+                      });
+                    },
+                  ),
+                )
+              ],
+            );
+          } else {
+            return Row(
+              children: [
+                SafeArea(
+                  child: NavigationRail(
+                    extended: constraints.maxWidth >= 600,
+                    destinations: [
+                      NavigationRailDestination(
+                        icon: Icon(Icons.home),
+                        label: Text('Início'),
+                      ),
+                      NavigationRailDestination(
+                        icon: Icon(Icons.favorite),
+                        label: Text('Favoritos'),
+                      ),
+                    ],
+                    selectedIndex: selectedIndex,
+                    onDestinationSelected: (value) {
+                      setState(() {
+                        selectedIndex = value;
+                      });
+                    },
+                  ),
+                ),
+                Expanded(child: mainArea),
+              ],
+            );
+          }
+        },
+      ),
+    );
   }
 }
 
